@@ -1,0 +1,32 @@
+# Node modules
+node_modules/
+
+# Logs
+logs
+*.log
+npm-debug.log*
+
+# Env files
+.env
+
+# Build folders
+dist/
+build/
+
+# OS-specific
+.DS_Store
+Thumbs.db
+
+# Editor folders
+.vscode/
+.idea/
+
+# React specific
+client/.env
+client/node_modules/
+
+# Uploaded files
+uploads/
+
+# Coverage/test output
+coverage/
