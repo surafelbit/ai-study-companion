@@ -42,13 +42,13 @@ const userSchema = new mongoose.Schema(
     passwordConfirm: {
       type: String,
       minlength: 6,
-      required: true,
       validate: {
         validator: function (el) {
-          return this.password == el;
+          return !this.isModified("password") || this.password === el;
         },
         message: "The password doesnt match",
       },
+      required: [true, "Please confirm your password"],
     },
     profileImage: {
       type: String,
@@ -56,6 +56,12 @@ const userSchema = new mongoose.Schema(
     role: { type: String, enum: ["admin", "student"], default: "student" },
     passwordResetToken: String,
     passwordResetExpires: Date,
+    isVerified: {
+      type: Boolean,
+      default: false,
+    },
+    verifyToken: String,
+    verifyTokenExpires: Date,
   },
   { timestamps: true }
 );
