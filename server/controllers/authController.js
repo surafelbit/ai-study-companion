@@ -32,37 +32,21 @@ exports.registerUser = async function (req, res, next) {
       user.verifyTokenExpires = new Date(Date.now() + 30 * 60 * 1000);
       user.passwordConfirm = undefined;
       await user.save({ validateBeforeSave: false });
-      {
-        /* <div style="font-family: Arial, sans-serif; padding: 20px; background: #f4f4f4;">
-        <div style="max-width: 600px; margin: auto; background: white; padding: 20px; border-radius: 10px;">
-          <h2 style="color: #333;">Reset Your Password</h2>
-          <p>Hi ${user.firstName || "there"},</p>
-          <p>We received a request to reset your password. Click the button below to reset it:</p>
-          <a href="${req.protocol}://${req
-        .get("host")
-        .replace(":5000", ":3000")}/forgotpassword/${resetedToken}"
-          style="display: inline-block; padding: 10px 20px; background: #007BFF; color: white; text-decoration: none; border-radius: 5px;">
-         Reset Password
-       </a>
-          <p style="margin-top: 20px; font-size: 12px; color: #777;">This link will expire in 10 minutes.</p>
-        </div>
-      </div> */
-      }
-      const verifyURL = `url/${token}`;
+
+      const verifyURL = `http://localhost:3000/verify-email/${token}`;
       sendEmail({
         receiver: user.email,
         subject: "this is the subject",
         text: "this is the text",
         message: `<div style="font-family: Arial, sans-serif; padding: 20px; background: #f4f4f4;">
       <div style="max-width: 600px; margin: auto; background: white; padding: 20px; border-radius: 10px;">
-        <h2 style="color: #333;">Reset Your Password</h2>
+        <h2 style="color: #333;">Verify Your Email</h2>
         <p>Hi ${user.firstName || "there"},</p>
-        <p>We received a request to reset your password. Click the button below to reset it:</p>
         <a href="${verifyURL}"
         style="display: inline-block; padding: 10px 20px; background: #007BFF; color: white; text-decoration: none; border-radius: 5px;">
-       Reset Password
+       Verify Email
      </a>
-        <p style="margin-top: 20px; font-size: 12px; color: #777;">This link will expire in 10 minutes.</p>
+        <p style="margin-top: 20px; font-size: 12px; color: #777;">This link will expire in 30 minutes.</p>
       </div>
     </div>`,
       });
@@ -84,7 +68,7 @@ exports.verifyEmail = async function (req, res) {
     const anothersome = crypto.createHash("sha256").update(some).digest("hex");
     const user = await Users.findOne({
       verifyToken: anothersome,
-      verifyTokenExpires: { gt: Date.now() },
+      verifyTokenExpires: { $gt: Date.now() },
     });
 
     if (!user) {
@@ -94,12 +78,13 @@ exports.verifyEmail = async function (req, res) {
       user.isVerified = true;
       user.verifyToken = undefined;
       user.verifyTokenExpiry = undefined;
-      await user.save();
+      await user.save({ validateBeforeSave: false });
 
       res.status(200).json({ message: "Account verified successfully" });
     }
   } catch (error) {
-    res.status(500).json({ message: "Server error", error: err.message });
+    console.log(error);
+    res.status(500).json({ message: "Server error", error: error.message });
   }
 };
 exports.signIn = async function (req, res) {
@@ -111,30 +96,31 @@ exports.signIn = async function (req, res) {
         .json({ message: "Email and password are required" });
     }
 
-    if (!email)
+    if (!email) {
       return res
         .status(400)
         .json({ message: "there is no user by that email" });
-    else {
-      const user = await Users.findOne({ email });
+    } else {
+      const user = await Users.findOne({ email }).select("+password");
       if (!user.isVerified) {
         return res
           .status(401)
           .json({ message: "Please verify your email first." });
       }
-      if (!user || (await !user.comparePassword(password)))
+      if (!user || !(await user.comparePassword(password)))
         return res.status(401).json({ message: "Invalid credentials" });
       else {
         return res.status(200).json({
           _id: user._id,
-          name: user.firstName + " " + user.lastName,
+          name: user.firstName,
           email: user.email,
           token: generateToken(user._id),
         });
       }
     }
-  } catch {
-    res.status(500).json({ message: "Login failed", error: err.message });
+  } catch (error) {
+    console.log(error);
+    res.status(500).json({ message: "Login failed", error: error.message });
   }
 };
 exports.forgotPassword = async function (req, res) {
@@ -144,7 +130,7 @@ exports.forgotPassword = async function (req, res) {
     return res.status(400).json({ message: "there is no user by that email" });
   const resetToken = user.resetPassword();
   await user.save({ validateBeforeSave: false });
-  const resetURL = `http://localhost:3000/${resetToken}`;
+  const resetURL = `http://localhost:3000/reset-password/${resetToken}`;
   sendEmail({
     receiver: user.email,
     subject: "nice email",
@@ -191,6 +177,7 @@ exports.resetPassword = async function (req, res) {
       res.status(400).json({ message: "Invalid or expired token" });
     }
   } catch (error) {
+    console.log(error);
     res.status(500).json({ message: "Login failed", error: error.message });
   }
 };

@@ -16,10 +16,11 @@ export default function Login() {
           password,
         }
       );
+      console.log(response.data);
+      localStorage.setItem("user", response.data);
       navigator("/fanum");
       setError(false);
-      setEmail("");
-      setPassword("");
+
       console.log(response);
     } catch (error) {
       console.log(error);
