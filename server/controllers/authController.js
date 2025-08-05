@@ -12,6 +12,11 @@ exports.registerUser = async function (req, res, next) {
     req.body;
   try {
     const users = await Users.findOne({ email: email });
+    if (users && !users.isVerified) {
+      return res.status(400).json({
+        canResend: true,
+      });
+    }
     if (users) {
       res.status(400).json({
         message: "Email already in use",
