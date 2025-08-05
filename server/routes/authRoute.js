@@ -6,4 +6,8 @@ router.post("/login", authController.signIn);
 router.post("/forgotpassword", authController.forgotPassword);
 router.post("/resetpassword/:token", authController.resetPassword);
 router.get("/verifyemail/:token", authController.verifyEmail);
+router.post("/logout", (req, res) => {
+  res.clearCookie("token");
+  res.status(200).json({ message: "Logged out successfully" });
+});
 module.exports = router;

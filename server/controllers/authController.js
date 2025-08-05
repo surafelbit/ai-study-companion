@@ -2,7 +2,7 @@ const Users = require("../models/Users");
 const jwt = require("jsonwebtoken");
 const crypto = require("crypto");
 const { Uploads } = require("openai/resources/index");
-const sendEMail = require("../utils/sendEmail");
+const sendEmail = require("../utils/sendEmail");
 
 const generateToken = (id) => {
   return jwt.sign({ id }, process.env.JWT_SECRET, { expiresIn: "90d" });
@@ -32,8 +32,40 @@ exports.registerUser = async function (req, res, next) {
       user.verifyTokenExpires = new Date(Date.now() + 30 * 60 * 1000);
       user.passwordConfirm = undefined;
       await user.save({ validateBeforeSave: false });
-
+      {
+        /* <div style="font-family: Arial, sans-serif; padding: 20px; background: #f4f4f4;">
+        <div style="max-width: 600px; margin: auto; background: white; padding: 20px; border-radius: 10px;">
+          <h2 style="color: #333;">Reset Your Password</h2>
+          <p>Hi ${user.firstName || "there"},</p>
+          <p>We received a request to reset your password. Click the button below to reset it:</p>
+          <a href="${req.protocol}://${req
+        .get("host")
+        .replace(":5000", ":3000")}/forgotpassword/${resetedToken}"
+          style="display: inline-block; padding: 10px 20px; background: #007BFF; color: white; text-decoration: none; border-radius: 5px;">
+         Reset Password
+       </a>
+          <p style="margin-top: 20px; font-size: 12px; color: #777;">This link will expire in 10 minutes.</p>
+        </div>
+      </div> */
+      }
       const verifyURL = `url/${token}`;
+      sendEmail({
+        receiver: user.email,
+        subject: "this is the subject",
+        text: "this is the text",
+        message: `<div style="font-family: Arial, sans-serif; padding: 20px; background: #f4f4f4;">
+      <div style="max-width: 600px; margin: auto; background: white; padding: 20px; border-radius: 10px;">
+        <h2 style="color: #333;">Reset Your Password</h2>
+        <p>Hi ${user.firstName || "there"},</p>
+        <p>We received a request to reset your password. Click the button below to reset it:</p>
+        <a href="${verifyURL}"
+        style="display: inline-block; padding: 10px 20px; background: #007BFF; color: white; text-decoration: none; border-radius: 5px;">
+       Reset Password
+     </a>
+        <p style="margin-top: 20px; font-size: 12px; color: #777;">This link will expire in 10 minutes.</p>
+      </div>
+    </div>`,
+      });
       res.status(201).json({
         _id: user._id,
         name: user.firstName,
@@ -85,6 +117,11 @@ exports.signIn = async function (req, res) {
         .json({ message: "there is no user by that email" });
     else {
       const user = await Users.findOne({ email });
+      if (!user.isVerified) {
+        return res
+          .status(401)
+          .json({ message: "Please verify your email first." });
+      }
       if (!user || (await !user.comparePassword(password)))
         return res.status(401).json({ message: "Invalid credentials" });
       else {
@@ -108,11 +145,22 @@ exports.forgotPassword = async function (req, res) {
   const resetToken = user.resetPassword();
   await user.save({ validateBeforeSave: false });
   const resetURL = `http://localhost:3000/${resetToken}`;
-  sendEMail({
-    email: user.email,
+  sendEmail({
+    receiver: user.email,
     subject: "nice email",
     text: "this is also nice",
-    message: `you forgot your password click this link to create a new password ${resetURL}`,
+    message: `<div style="font-family: Arial, sans-serif; padding: 20px; background: #f4f4f4;">
+    <div style="max-width: 600px; margin: auto; background: white; padding: 20px; border-radius: 10px;">
+      <h2 style="color: #333;">Reset Your Password</h2>
+      <p>Hi ${user.firstName || "there"},</p>
+      <p>We received a request to reset your password. Click the button below to reset it:</p>
+      <a href="${resetURL}"
+      style="display: inline-block; padding: 10px 20px; background: #007BFF; color: white; text-decoration: none; border-radius: 5px;">
+     Reset Password
+   </a>
+      <p style="margin-top: 20px; font-size: 12px; color: #777;">This link will expire in 10 minutes.</p>
+    </div>
+  </div>`,
   });
   res.status(200).json({
     message: "reset token is sent",
