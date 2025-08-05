@@ -5,12 +5,23 @@ import Register from "./components/Register";
 import VerifyEmail from "./pages/VerifyEmail";
 import ForgotPasswordPage from "./pages/ForgotPasswordPage";
 import ResetPasswordPage from "./pages/ResetPasswordPage";
+import Trial from "./pages/Trial";
+import PrivateRoute from "./components/PrivateRoute";
 import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
 function App() {
   return (
     <Router>
       <Routes>
         <Route path="/login" element={<LoginPage />} />
+
+        <Route
+          path="/fanum"
+          element={
+            <PrivateRoute>
+              <Trial />
+            </PrivateRoute>
+          }
+        />
         <Route path="/register" element={<Register />}></Route>
         <Route path="/verify-email/:id" element={<VerifyEmail />} />
         <Route path="/forgot-password" element={<ForgotPasswordPage />} />

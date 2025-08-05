@@ -114,6 +114,7 @@ exports.signIn = async function (req, res) {
           _id: user._id,
           name: user.firstName,
           email: user.email,
+          role: user.role,
           token: generateToken(user._id),
         });
       }

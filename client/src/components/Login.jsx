@@ -1,7 +1,9 @@
 import React, { useState } from "react";
 import axios from "axios";
+import { useAuth } from "../hooks/AuthProvider";
 import { useNavigate } from "react-router-dom";
 export default function Login() {
+  const { login } = useAuth();
   const navigator = useNavigate();
   const [email, setEmail] = useState();
   const [password, setPassword] = useState();
@@ -17,7 +19,8 @@ export default function Login() {
         }
       );
       console.log(response.data);
-      localStorage.setItem("user", response.data);
+      // localStorage.setItem("user", response.data);
+      login(response.data);
       navigator("/fanum");
       setError(false);
 
