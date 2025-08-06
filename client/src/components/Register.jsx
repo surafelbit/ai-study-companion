@@ -71,10 +71,14 @@
 //     </form>
 //   );
 // }
-import React, { use, useState } from "react";
+import React, { useState } from "react";
 import axios from "axios";
 import { useNavigate } from "react-router-dom";
+import { useModal } from "../hooks/ModalProvider";
 export default function Register() {
+  const { showModal } = useModal();
+  const { isOpen } = useModal();
+  const { setIsOpen } = useModal();
   const [resend, setResend] = useState();
   async function submitHandler(e) {
     try {
@@ -91,6 +95,7 @@ export default function Register() {
       );
       console.log(response);
     } catch (error) {
+      setIsOpen(true);
       console.log(error?.response?.data?.canResend);
       setResend(error?.response?.data?.canResend);
     }
@@ -107,9 +112,37 @@ export default function Register() {
   if (email && password && passwordConfirm && firstName) {
     // setIsDisabled(false);
   }
+  const resender = async (e) => {
+    e.preventDefault();
+
+    try {
+      const response = await axios.post(
+        "http://localhost:5000/api/auth/resend-verification",
+        {
+          email,
+        }
+      );
+      console.log(response);
+    } catch (error) {
+      console.log(error);
+    }
+  };
   return (
     <div className="min-h-screen bg-gradient-to-br from-blue-50 to-indigo-100">
       {/* Navigation */}
+      {resend &&
+        isOpen &&
+        showModal(
+          <div>
+            resender div
+            <button
+              className="mt-4 px-4 py-2 bg-green-500 text-white rounded"
+              onClick={resender}
+            >
+              resend
+            </button>
+          </div>
+        )}
       <nav className="bg-white shadow-sm">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="flex justify-between items-center h-16">

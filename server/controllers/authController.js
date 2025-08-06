@@ -187,3 +187,40 @@ exports.resetPassword = async function (req, res) {
     res.status(500).json({ message: "Login failed", error: error.message });
   }
 };
+exports.resendToken = async (req, res) => {
+  try {
+    const { email } = req.body.email;
+    const user = await Users.findOne({ email });
+    const token = crypto.randomBytes(32).toString("hex");
+    const some = crypto.createHash("sha256").update(token).digest("hex");
+    user.verifyToken = some;
+    user.verifyTokenExpires = new Date(Date.now() + 30 * 60 * 1000);
+    user.passwordConfirm = undefined;
+    await user.save({ validateBeforeSave: false });
+
+    const verifyURL = `http://localhost:3000/verify-email/${token}`;
+    sendEmail({
+      receiver: user.email,
+      subject: "this is the subject",
+      text: "this is the text",
+      message: `<div style="font-family: Arial, sans-serif; padding: 20px; background: #f4f4f4;">
+  <div style="max-width: 600px; margin: auto; background: white; padding: 20px; border-radius: 10px;">
+    <h2 style="color: #333;">Verify Your Email</h2>
+    <p>Hi ${user.firstName || "there"},</p>
+    <a href="${verifyURL}"
+    style="display: inline-block; padding: 10px 20px; background: #007BFF; color: white; text-decoration: none; border-radius: 5px;">
+   Verify Email
+ </a>
+    <p style="margin-top: 20px; font-size: 12px; color: #777;">This link will expire in 30 minutes.</p>
+  </div>
+</div>`,
+    });
+    res.status(201).json({
+      _id: user._id,
+      name: user.firstName,
+      email: user.email,
+      verifyURL,
+      token: generateToken(user._id),
+    });
+  } catch (error) {}
+};

@@ -10,4 +10,5 @@ router.post("/logout", (req, res) => {
   res.clearCookie("token");
   res.status(200).json({ message: "Logged out successfully" });
 });
+router.post("/resend-verification", authController.resendToken);
 module.exports = router;
