@@ -3,6 +3,7 @@ const jwt = require("jsonwebtoken");
 const crypto = require("crypto");
 const { Uploads } = require("openai/resources/index");
 const sendEmail = require("../utils/sendEmail");
+const { emit } = require("process");
 
 const generateToken = (id) => {
   return jwt.sign({ id }, process.env.JWT_SECRET, { expiresIn: "90d" });
@@ -63,8 +64,30 @@ exports.registerUser = async function (req, res, next) {
         token: generateToken(user._id),
       });
     }
-  } catch (error) {
-    res.status(500).json({ message: "Register failed", error: error.message });
+  } catch (
+    error
+    // res.status(500).json({ message: "Register failed", error: error.message });
+  ) {
+    // Handle Mongoose validation errors
+    if (error.name === "ValidationError") {
+      const errors = Object.values(error.errors).map((el) => el.message);
+      return res.status(400).json({
+        message: "Validation failed",
+        errors, // array of validation error messages
+      });
+    }
+
+    // Handle duplicate key error (unique email)
+    if (error.code && error.code === 11000) {
+      return res.status(400).json({
+        message: "Email already exists",
+      });
+    }
+
+    // Other errors
+    return res
+      .status(500)
+      .json({ message: "Register failed", error: error.message });
   }
 };
 exports.verifyEmail = async function (req, res) {
@@ -189,7 +212,7 @@ exports.resetPassword = async function (req, res) {
 };
 exports.resendToken = async (req, res) => {
   try {
-    const { email } = req.body.email;
+    const { email } = req.body;
     const user = await Users.findOne({ email });
     const token = crypto.randomBytes(32).toString("hex");
     const some = crypto.createHash("sha256").update(token).digest("hex");
@@ -222,5 +245,7 @@ exports.resendToken = async (req, res) => {
       verifyURL,
       token: generateToken(user._id),
     });
-  } catch (error) {}
+  } catch (error) {
+    console.log(error);
+  }
 };

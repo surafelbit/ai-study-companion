@@ -75,31 +75,10 @@ import React, { useState } from "react";
 import axios from "axios";
 import { useNavigate } from "react-router-dom";
 import { useModal } from "../hooks/ModalProvider";
+import { useEffect } from "react";
+import { toast } from "react-toastify";
+
 export default function Register() {
-  const { showModal } = useModal();
-  const { isOpen } = useModal();
-  const { setIsOpen } = useModal();
-  const [resend, setResend] = useState();
-  async function submitHandler(e) {
-    try {
-      e.preventDefault();
-      const response = await axios.post(
-        "http://localhost:5000/api/auth/register",
-        {
-          email,
-          password,
-          passwordConfirm,
-          phoneNumber,
-          firstName,
-        }
-      );
-      console.log(response);
-    } catch (error) {
-      setIsOpen(true);
-      console.log(error?.response?.data?.canResend);
-      setResend(error?.response?.data?.canResend);
-    }
-  }
   const navigator = useNavigate();
   const [email, setEmail] = useState();
   const [password, setPassword] = useState();
@@ -109,9 +88,9 @@ export default function Register() {
   const [phoneNumber, setPhoneNumber] = useState();
   const [error, setError] = useState(false);
   const [isDisabled, setIsDisabled] = useState(true);
-  if (email && password && passwordConfirm && firstName) {
-    // setIsDisabled(false);
-  }
+  const { showModal, isOpen, setIsOpen } = useModal();
+
+  const [resend, setResend] = useState(false);
   const resender = async (e) => {
     e.preventDefault();
 
@@ -127,10 +106,78 @@ export default function Register() {
       console.log(error);
     }
   };
+  const resendVerification = async () => {
+    try {
+      console.log(email);
+      const response = await axios.post(
+        "http://localhost:5000/api/auth/resend-verification",
+        {
+          email: email,
+        }
+      );
+      toast.success("verification code resent");
+
+      console.log("Verification email resent:", response.data);
+      // Optionally show a toast or alert here
+    } catch (error) {
+      console.error("Resend failed:", error.response?.data);
+    }
+  };
+
+  // inside the component
+  useEffect(() => {
+    if (resend && isOpen) {
+      showModal(
+        <div>
+          <p>resender div</p>
+          <button
+            className="mt-4 px-4 py-2 bg-green-500 text-white rounded"
+            onClick={resendVerification}
+          >
+            resend
+          </button>
+        </div>
+      );
+    }
+    // resendVerification();
+  }, [resend, isOpen]);
+
+  async function submitHandler(e) {
+    try {
+      e.preventDefault();
+      const response = await axios.post(
+        "http://localhost:5000/api/auth/register",
+        {
+          email,
+          password,
+          passwordConfirm,
+          phoneNumber,
+          firstName,
+        }
+      );
+      console.log(response);
+    } catch (error) {
+      const data = error.response?.data;
+
+      if (data?.canResend) {
+        // resendVerification();
+        // ✅ This means user exists but is not verified
+        setResend(true);
+        setIsOpen(true);
+      }
+      console.log(error);
+      console.log(error?.response?.data?.canResend);
+    }
+  }
+
+  if (email && password && passwordConfirm && firstName) {
+    // setIsDisabled(false);
+  }
+
   return (
     <div className="min-h-screen bg-gradient-to-br from-blue-50 to-indigo-100">
       {/* Navigation */}
-      {resend &&
+      {/* {resend &&
         isOpen &&
         showModal(
           <div>
@@ -142,7 +189,7 @@ export default function Register() {
               resend
             </button>
           </div>
-        )}
+        )} */}
       <nav className="bg-white shadow-sm">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="flex justify-between items-center h-16">
