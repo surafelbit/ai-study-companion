@@ -1,6 +1,7 @@
 import React from "react";
-
+import { Link } from "react-router-dom";
 export default function Sidebar({ isSidebarOpen }) {
+  console.log(isSidebarOpen);
   return (
     <aside
       className={`bg-white shadow-sm border-r border-gray-200 min-h-screen ${
@@ -10,8 +11,8 @@ export default function Sidebar({ isSidebarOpen }) {
     >
       <div className="p-6">
         <nav className="space-y-2">
-          <a
-            href="#"
+          <Link
+            to="/dashboard/"
             className="flex items-center px-4 py-3 text-sm font-medium text-blue-600 bg-blue-50 rounded-lg transition-colors"
           >
             <svg
@@ -34,9 +35,9 @@ export default function Sidebar({ isSidebarOpen }) {
               />
             </svg>
             Dashboard
-          </a>
-          <a
-            href="#"
+          </Link>
+          <Link
+            to="/dashboard/upload"
             className="flex items-center px-4 py-3 text-sm font-medium text-gray-600 hover:text-gray-900 hover:bg-gray-50 rounded-lg transition-colors"
           >
             <svg
@@ -53,9 +54,9 @@ export default function Sidebar({ isSidebarOpen }) {
               />
             </svg>
             Uploads
-          </a>
-          <a
-            href="#"
+          </Link>
+          <Link
+            to="/paris"
             className="flex items-center px-4 py-3 text-sm font-medium text-gray-600 hover:text-gray-900 hover:bg-gray-50 rounded-lg transition-colors"
           >
             <svg
@@ -72,7 +73,7 @@ export default function Sidebar({ isSidebarOpen }) {
               />
             </svg>
             History
-          </a>
+          </Link>
           <a
             href="#"
             className="flex items-center px-4 py-3 text-sm font-medium text-gray-600 hover:text-gray-900 hover:bg-gray-50 rounded-lg transition-colors"

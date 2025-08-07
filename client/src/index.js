@@ -5,14 +5,17 @@ import App from "./App";
 import reportWebVitals from "./reportWebVitals";
 import { AuthProvider } from "./hooks/AuthProvider";
 import { ModalProvider } from "./hooks/ModalProvider";
+import { BrowserRouter } from "react-router-dom";
 const root = ReactDOM.createRoot(document.getElementById("root"));
 root.render(
   <React.StrictMode>
-    <ModalProvider>
-      <AuthProvider>
-        <App />
-      </AuthProvider>
-    </ModalProvider>
+    <BrowserRouter>
+      <ModalProvider>
+        <AuthProvider>
+          <App />
+        </AuthProvider>
+      </ModalProvider>
+    </BrowserRouter>
   </React.StrictMode>
 );
 

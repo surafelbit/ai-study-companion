@@ -15,7 +15,7 @@ import "react-toastify/dist/ReactToastify.css";
 
 function App() {
   return (
-    <Router>
+    <>
       <ToastContainer position="top-right" autoClose={3000} />
 
       <Routes>
@@ -31,7 +31,7 @@ function App() {
           }
         />
         <Route
-          path="/dashboard"
+          path="/dashboard/*"
           element={
             <PrivateRoute>
               <DashboardPage />
@@ -43,7 +43,7 @@ function App() {
         <Route path="/forgot-password" element={<ForgotPasswordPage />} />
         <Route path="/reset-password/:id" element={<ResetPasswordPage />} />
       </Routes>
-    </Router>
+    </>
     // <div className="App">
     //   <header className="App-header">
     //     <img src={logo} className="App-logo" alt="logo" />
