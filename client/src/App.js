@@ -9,6 +9,7 @@ import Trial from "./pages/Trial";
 import PrivateRoute from "./components/PrivateRoute";
 import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
 import LandingPage from "./pages/LandingPage";
+import DashboardPage from "./pages/DashboardPage";
 import { ToastContainer } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 
@@ -26,6 +27,14 @@ function App() {
           element={
             <PrivateRoute>
               <Trial />
+            </PrivateRoute>
+          }
+        />
+        <Route
+          path="/dashboard"
+          element={
+            <PrivateRoute>
+              <DashboardPage />
             </PrivateRoute>
           }
         />

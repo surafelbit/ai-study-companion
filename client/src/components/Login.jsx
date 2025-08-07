@@ -71,9 +71,11 @@ export default function Login() {
       console.log(response.data);
       // localStorage.setItem("user", response.data);
       login(response.data);
-      navigator("/fanum");
+      // navigator("/fanum");
       setError(false);
-
+      if (response.data.role == "student") {
+        navigator("/dashboard");
+      }
       console.log(response);
     } catch (error) {
       console.log(error);
