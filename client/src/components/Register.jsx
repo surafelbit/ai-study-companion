@@ -87,6 +87,7 @@ export default function Register() {
   const [passwordConfirm, setPasswordConfirm] = useState();
   const [phoneNumber, setPhoneNumber] = useState();
   const [error, setError] = useState(false);
+  const [multipleError, setMultipleError] = useState([]);
   const [isDisabled, setIsDisabled] = useState(true);
   const { showModal, isOpen, setIsOpen } = useModal();
 
@@ -141,7 +142,15 @@ export default function Register() {
     }
     // resendVerification();
   }, [resend, isOpen]);
-
+  const triggerShake = () => {
+    setError(true);
+    setTimeout(() => setError(false), 500); // remove after animation
+  };
+  useEffect(() => {
+    multipleError?.map((e) => {
+      return toast.error(e);
+    });
+  }, [multipleError]);
   async function submitHandler(e) {
     try {
       e.preventDefault();
@@ -156,15 +165,19 @@ export default function Register() {
         }
       );
       console.log(response);
+      setError(false);
     } catch (error) {
       const data = error.response?.data;
-
+      setMultipleError(error.response?.data?.errors);
       if (data?.canResend) {
         // resendVerification();
         // ✅ This means user exists but is not verified
         setResend(true);
         setIsOpen(true);
+      } else {
+        setError(true);
       }
+      triggerShake();
       console.log(error);
       console.log(error?.response?.data?.canResend);
     }
@@ -231,7 +244,11 @@ export default function Register() {
       </nav>
 
       {/* Register Form */}
-      <main className="flex-1 flex items-center justify-center px-4 sm:px-6 lg:px-8 py-12">
+      <main
+        className={`flex-1 flex items-center justify-center px-4 sm:px-6 lg:px-8 py-12 ${
+          error ? "animate-shake" : ""
+        }`}
+      >
         <div className="max-w-md w-full space-y-8">
           {/* Header */}
           <div className="text-center">

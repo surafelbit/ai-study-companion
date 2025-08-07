@@ -207,7 +207,13 @@ exports.resetPassword = async function (req, res) {
     }
   } catch (error) {
     console.log(error);
-    res.status(500).json({ message: "Login failed", error: error.message });
+    if (error.name === "ValidationError") {
+      const errors = Object.values(error.errors).map((el) => el.message);
+      return res.status(400).json({
+        message: "Validation failed",
+        errors, // array of validation error messages
+      });
+    }
   }
 };
 exports.resendToken = async (req, res) => {
