@@ -10,6 +10,12 @@ const aiResponseSchema = new mongoose.Schema({
     ref: "users",
     required: true,
   },
+  interactions: [
+    {
+      question: { type: String, required: true },
+      answer: { type: String, required: true },
+    },
+  ],
   question: String,
   answer: String,
   createdAt: { type: Date, default: Date.now },
