@@ -21,7 +21,13 @@ exports.uploader = async function (req, res) {
       user: "6891bd868300b6890911a749",
       extractedText: data2.text,
     });
+    const aidata = await AIResponse.create({
+      file: datas._id,
+      user: "6891bd868300b6890911a749",
+    });
+    console.log(datas._id, "this should be the id of the file uploaded");
     res.status(200).json({
+      aidata,
       datas,
       notice: "we have succesfully analyzed you data",
       data: data2.text,

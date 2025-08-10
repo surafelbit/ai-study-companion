@@ -16,8 +16,8 @@ const aiResponseSchema = new mongoose.Schema({
       answer: { type: String, required: true },
     },
   ],
-  question: String,
-  answer: String,
+  // question: String,
+  // answer: String,
   createdAt: { type: Date, default: Date.now },
 });
 const AIResponse = new mongoose.model("airesponses", aiResponseSchema);
