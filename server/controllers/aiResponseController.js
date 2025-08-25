@@ -11,7 +11,7 @@ exports.ask = async function (req, res) {
       // undefined;
       await UploadFile.findById("6895e456d8f0b25f93a08b8c");
     if (referenceText) {
-      //UploadFile.findById("6895e456d8f0b25f93a08b8c");
+      //UploadFile.findById("6895e456d8f0b25f93a08b8c");holiday
       const mainText = referenceText.extractedText;
       const client = new OpenAI({
         baseURL: "https://models.github.ai/inference",
