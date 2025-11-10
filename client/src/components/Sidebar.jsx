@@ -7,7 +7,6 @@ export default function Sidebar({ isSidebarOpen }) {
       className={`bg-white shadow-sm border-r border-gray-200 min-h-screen ${
         isSidebarOpen ? "translate-x-0" : "-translate-x-full"
       }`}
-      //className="hidden md:block w-64 bg-white shadow-sm border-r border-gray-200 min-h-screen"
     >
       <div className="p-6">
         <nav className="space-y-2">
