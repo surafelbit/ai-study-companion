@@ -15,8 +15,6 @@ connectDB();
 //   windowMs: 60 * 60 * 1000,
 //   message: "request limit passed. Try again an hour later",
 // });
-// app.use(limiter);
-// app.use(mongoSanitize());
 
 app.use(express.json());
 app.use(cors());
