@@ -42,7 +42,6 @@ exports.ask = async function (req, res) {
       if (!airesponse) {
         airesponse = await new AIResponse({
           file: "6895dd2eaaa222045ab48dab",
-          // change this to dynamic
           user: "688f726069ee334a7ffc3dde",
           interactions: [],
         });
