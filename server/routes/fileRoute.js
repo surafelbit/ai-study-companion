@@ -6,5 +6,4 @@ const upload = multer({ storage });
 const fileUploadController = require("../controllers/fileUploadController");
 router.post("/single", upload.single("file"), fileUploadController.uploader);
 router.post("/extract", fileUploadController.extract);
-//router.post("/multiple", fileUploadController.extracting);
 module.exports = router;
