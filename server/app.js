@@ -14,7 +14,7 @@ connectDB();
 //   max: 100,
 //   windowMs: 60 * 60 * 1000,
 //   message: "request limit passed. Try again an hour later",
-// });
+// });m
 
 app.use(express.json());
 app.use(cors());
