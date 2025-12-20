@@ -8,6 +8,7 @@ const sendEmail = async (options) => {
       pass: process.env.EMAIL_SANDBOXPASS,
     },
   });
+  //
   const mailOptions = {
     from: `${process.env.FROM_NAME} <${process.env.FROM_EMAIL}>`,
     to: options.receiver,
