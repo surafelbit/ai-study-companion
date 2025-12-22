@@ -11,7 +11,7 @@ connectDB();
 // const mongoSanitize = require("express-mongo-sanitize");
 // const rateLimit = require("express-rate-limit");
 // const limiter = rateLimit({
-//   max: 100,
+//   max: 100, /)
 //   windowMs: 60 * 60 * 1000,
 //   message: "request limit passed. Try again an hour later",
 // });
