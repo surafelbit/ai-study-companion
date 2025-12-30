@@ -9,6 +9,7 @@ const sendEmail = async (options) => {
     },
   });
   //
+  //
   const mailOptions = {
     from: `${process.env.FROM_NAME} <${process.env.FROM_EMAIL}>`,
     to: options.receiver,
