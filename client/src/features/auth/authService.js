@@ -7,6 +7,6 @@ export async function login(credentials) {
     if (error.response && error.response.data && error.response.data.message) {
       throw new Error(error.response.data.message);
     }
-    throw new Error("Login failed");
+    throw new Error("Login failed ");
   }
 }
