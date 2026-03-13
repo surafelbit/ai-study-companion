@@ -5,11 +5,12 @@ require("dotenv").config();
 const UploadFile = require("../models/UploadFile");
 exports.ask = async function (req, res) {
   try {
+    const id = req.params.id;
     const questions = req.body.question;
     const token = process.env.AI_API;
     const referenceText =
       // undefined;
-      await UploadFile.findById("6895e456d8f0b25f93a08b8c");
+      await UploadFile.findById(id);
     if (referenceText) {
       //UploadFile.findById("6895e456d8f0b25f93a08b8c");
       const mainText = referenceText.extractedText;
@@ -36,13 +37,13 @@ exports.ask = async function (req, res) {
       });
 
       let airesponse = await AIResponse.findOne({
-        file: "6895dd2eaaa222045ab48dab",
-        user: "688f726069ee334a7ffc3dde",
+        file: id,
+        user: req.user._id,
       });
       if (!airesponse) {
         airesponse = await new AIResponse({
-          file: "6895dd2eaaa222045ab48dab",
-          user: "688f726069ee334a7ffc3dde",
+          file: id,
+          user: req.user._id,
           interactions: [],
         });
       }
@@ -99,7 +100,7 @@ exports.ask = async function (req, res) {
         //await AIResponse.findById("");
         if (!content) {
           const newresponse = await new AIResponse({
-            user: "688f726069ee334a7ffc3dde",
+            user: req.user._id,
             interactions: [
               {
                 question: req.body.question,

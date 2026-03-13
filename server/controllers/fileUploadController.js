@@ -18,12 +18,12 @@ exports.uploader = async function (req, res) {
     const datas = await UploadFile.create({
       fileUrl: imported,
       fileName: req.file.originalname,
-      user: "6891bd868300b6890911a749",
+      user: req.user._id,
       extractedText: data2.text,
     });
     const aidata = await AIResponse.create({
       file: datas._id,
-      user: "6891bd868300b6890911a749",
+      user: req.user._id,
     });
     console.log(datas._id, "this should be the id of the file uploaded");
     res.status(200).json({
@@ -59,5 +59,21 @@ exports.extract = async function (req, res) {
     res.status(400).json({
       error,
     });
+  }
+};
+exports.getFiles = async function (req, res) {
+  try {
+    const files = await UploadFile.find({ user: req.user._id }).sort({
+      uploadedAt: -1,
+    });
+    res.status(200).json({
+      status: "success",
+      results: files.length,
+      data: {
+        files,
+      },
+    });
+  } catch (error) {
+    res.status(400).json({ error });
   }
 };

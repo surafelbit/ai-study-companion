@@ -1,6 +1,53 @@
-import React from "react";
+import React, { useState } from "react";
+import axios from "axios";
+import { useAuth } from "../hooks/AuthProvider";
+import { toast } from "react-toastify";
+import { useNavigate } from "react-router-dom";
 
 export default function Things() {
+  const [selectedFile, setSelectedFile] = useState(null);
+  const [uploading, setUploading] = useState(false);
+  const { user } = useAuth();
+  const navigate = useNavigate();
+
+  const handleFileChange = (e) => {
+    setSelectedFile(e.target.files[0]);
+  };
+
+  const handleUpload = async () => {
+    if (!selectedFile) {
+      toast.warning("Please select a file first.");
+      return;
+    }
+
+    const formData = new FormData();
+    formData.append("file", selectedFile);
+
+    setUploading(true);
+    try {
+      const token = user?.token || JSON.parse(localStorage.getItem("user"))?.token;
+      const response = await axios.post("http://localhost:5000/api/files/single", formData, {
+        headers: {
+          "Content-Type": "multipart/form-data",
+          Authorization: `Bearer ${token}`,
+        },
+      });
+
+      if (response.status === 200) {
+        toast.success("Study material uploaded successfully! Analysis started.");
+        setSelectedFile(null);
+        // Redirect to dashboard home to see analysis status (if we implemented it)
+        // For now, let's just stay here or redirect to list
+        navigate("/dashboard/my-files");
+      }
+    } catch (error) {
+      console.error("Upload error:", error);
+      toast.error("Failed to upload study material.");
+    } finally {
+      setUploading(false);
+    }
+  };
+
   return (
     <div className="bg-white rounded-2xl shadow-lg p-8 mb-8">
       <div className="text-center">
@@ -28,42 +75,53 @@ export default function Things() {
           DOCX, and TXT files.
         </p>
 
-        <div className="border-2 border-dashed border-gray-300 rounded-xl p-12 hover:border-blue-400 hover:bg-blue-50 transition-all cursor-pointer">
+        <div className="border-2 border-dashed border-gray-300 rounded-xl p-12 hover:border-blue-400 hover:bg-blue-50 transition-all cursor-pointer relative">
           <input
             type="file"
-            className="hidden"
+            className="absolute inset-0 w-full h-full opacity-0 cursor-pointer"
             id="file-upload"
+            onChange={handleFileChange}
             accept=".pdf,.docx,.txt"
-            multiple
           />
-          <label htmlFor="file-upload" className="cursor-pointer">
-            <div className="flex flex-col items-center">
-              <svg
-                className="w-16 h-16 text-gray-400 mb-4"
-                fill="none"
-                stroke="currentColor"
-                viewBox="0 0 24 24"
-              >
-                <path
-                  strokeLinecap="round"
-                  strokeLinejoin="round"
-                  strokeWidth={2}
-                  d="M12 6v6m0 0v6m0-6h6m-6 0H6"
-                />
-              </svg>
-              <span className="text-lg font-medium text-gray-700 mb-2">
-                Choose files to upload
-              </span>
-              <span className="text-sm text-gray-500">
-                or drag and drop them here
-              </span>
-            </div>
-          </label>
+          <div className="flex flex-col items-center">
+            <svg
+              className={`w-16 h-16 mb-4 transition-colors ${selectedFile ? 'text-blue-500' : 'text-gray-400'}`}
+              fill="none"
+              stroke="currentColor"
+              viewBox="0 0 24 24"
+            >
+              <path
+                strokeLinecap="round"
+                strokeLinejoin="round"
+                strokeWidth={2}
+                d="M12 6v6m0 0v6m0-6h6m-6 0H6"
+              />
+            </svg>
+            <span className="text-lg font-medium text-gray-700 mb-2">
+              {selectedFile ? selectedFile.name : "Choose files to upload"}
+            </span>
+            <span className="text-sm text-gray-500">
+              {selectedFile ? "File selected" : "or drag and drop them here"}
+            </span>
+          </div>
         </div>
 
         <div className="mt-6 flex justify-center">
-          <button className="bg-blue-600 hover:bg-blue-700 text-white px-8 py-3 rounded-lg text-lg font-semibold transition-all transform hover:scale-105 shadow-lg hover:shadow-xl">
-            Start Analysis
+          <button
+            onClick={handleUpload}
+            disabled={uploading || !selectedFile}
+            className={`px-8 py-3 rounded-lg text-lg font-semibold transition-all transform hover:scale-105 shadow-lg hover:shadow-xl
+              ${uploading || !selectedFile
+                ? 'bg-gray-100 text-gray-400 cursor-not-allowed'
+                : 'bg-blue-600 text-white hover:bg-blue-700'
+              }`}
+          >
+            {uploading ? (
+              <div className="flex items-center gap-2">
+                <div className="w-5 h-5 border-2 border-white border-t-transparent rounded-full animate-spin"></div>
+                Analyzing...
+              </div>
+            ) : "Start Analysis"}
           </button>
         </div>
 

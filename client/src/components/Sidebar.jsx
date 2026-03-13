@@ -4,9 +4,8 @@ export default function Sidebar({ isSidebarOpen }) {
   console.log(isSidebarOpen);
   return (
     <aside
-      className={`bg-white shadow-sm border-r border-gray-200 min-h-screen ${
-        isSidebarOpen ? "translate-x-0" : "-translate-x-full"
-      }`}
+      className={`bg-white shadow-sm border-r border-gray-200 min-h-screen ${isSidebarOpen ? "translate-x-0" : "-translate-x-full"
+        }`}
     >
       <div className="p-6">
         <nav className="space-y-2">
@@ -36,7 +35,7 @@ export default function Sidebar({ isSidebarOpen }) {
             Dashboard
           </Link>
           <Link
-            to="/dashboard/upload"
+            to="/dashboard/my-files"
             className="flex items-center px-4 py-3 text-sm font-medium text-gray-600 hover:text-gray-900 hover:bg-gray-50 rounded-lg transition-colors"
           >
             <svg
@@ -49,10 +48,10 @@ export default function Sidebar({ isSidebarOpen }) {
                 strokeLinecap="round"
                 strokeLinejoin="round"
                 strokeWidth={2}
-                d="M7 16a4 4 0 01-.88-7.903A5 5 0 1115.9 6L16 6a5 5 0 011 9.9M15 13l-3-3m0 0l-3 3m3-3v12"
+                d="M3 7v10a2 2 0 002 2h14a2 2 0 002-2V9a2 2 0 00-2-2H5a2 2 0 00-2-2z"
               />
             </svg>
-            Uploads
+            My Files
           </Link>
           <Link
             to="/paris"

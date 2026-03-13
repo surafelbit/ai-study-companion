@@ -2,7 +2,9 @@ import { useState } from "react";
 import Sidebar from "../components/Sidebar";
 import Some from "../components/Some";
 import { useLocation, Routes, Route } from "react-router-dom";
-import Things from "../components/Things";
+import UploadedFiles from "../components/UploadedFiles";
+import DocumentQA from "../components/DocumentQA";
+
 export default function DashboardPage() {
   let content;
   const pathname = location.pathname;
@@ -191,7 +193,9 @@ export default function DashboardPage() {
 
           {/* Upload Section */}
           <Routes>
-            <Route path="upload" element={<Things />} />
+            {/* <Route path="upload" element={<Things />} /> */}
+            <Route path="my-files" element={<UploadedFiles />} />
+            <Route path="qa/:id" element={<DocumentQA />} />
             <Route path="" element={<Some />}></Route>
           </Routes>
           {/* <div className="bg-white rounded-2xl shadow-lg p-8 mb-8">
